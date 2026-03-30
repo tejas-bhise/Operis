@@ -51,7 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(monitoring_routes.router)
 app.include_router(signal_routes.router)
 app.include_router(digest_routes.router)
