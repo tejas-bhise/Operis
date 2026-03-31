@@ -7,13 +7,14 @@ Registers routers, initializes PostgreSQL schema, and safely manages scheduler l
 import logging
 import asyncio
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import engine
 from app.db.base import Base
 
-# Register all models
+# Register models so SQLAlchemy detects tables
 from app.models import event, signal, digest, project_health, monitoring_cycle  # noqa: F401
 
 from app.api.routes import monitoring_routes, signal_routes, digest_routes, health_routes
@@ -29,8 +30,11 @@ logger = logging.getLogger("operis.main")
 
 
 async def safe_start_scheduler():
-    """Delay scheduler start to ensure DB + env ready."""
-    await asyncio.sleep(5)
+    """
+    Delay scheduler start slightly so DB + env variables are ready.
+    Prevents cold-start race condition on Render.
+    """
+    await asyncio.sleep(3)
 
     try:
         logger.info("Starting monitoring scheduler...")
@@ -43,7 +47,11 @@ async def safe_start_scheduler():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Handles application startup and shutdown safely."""
+    """
+    Handles application startup and shutdown safely.
+    Ensures scheduler keeps running so Render does not stop the service.
+    """
+
     logger.info("Operis backend initializing")
 
     try:
@@ -53,18 +61,25 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
 
+    # start scheduler in background
     asyncio.create_task(safe_start_scheduler())
 
-    yield
-
+    # KEEP APP ALIVE
     try:
-        stop_scheduler()
-        logger.info("Scheduler stopped")
+        yield
 
-    except Exception as e:
-        logger.error(f"Scheduler shutdown error: {e}")
+        while True:
+            await asyncio.sleep(3600)
 
-    logger.info("Operis backend shutdown complete")
+    finally:
+        try:
+            stop_scheduler()
+            logger.info("Scheduler stopped")
+
+        except Exception as e:
+            logger.error(f"Scheduler shutdown error: {e}")
+
+        logger.info("Operis backend shutdown complete")
 
 
 app = FastAPI(
