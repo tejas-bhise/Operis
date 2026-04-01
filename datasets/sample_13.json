@@ -1,0 +1,45 @@
+{
+"sample_id":"sample_13",
+"window":"20:00-20:30",
+"events":[
+{"timestamp":"20:00","source":"slack","project":"Nova","text":"Multiple teams waiting confirmation on API contract"},
+{"timestamp":"20:01","source":"jira","project":"Nova","text":"Ticket NOVA-350 dependency unresolved"},
+{"timestamp":"20:02","source":"github","project":"Nova","text":"Refactor prepared awaiting schema confirmation"},
+{"timestamp":"20:03","source":"email","project":"Nova","text":"Client requested timeline clarity"},
+{"timestamp":"20:04","source":"calendar","project":"Nova","text":"Cross-team sync scheduled"},
+
+{"timestamp":"20:05","source":"slack","project":"Vertex","text":"Waiting backend confirmation before UI freeze"},
+{"timestamp":"20:06","source":"jira","project":"Vertex","text":"Ticket VTX-210 blocked pending API schema"},
+{"timestamp":"20:07","source":"github","project":"Vertex","text":"UI integration paused"},
+{"timestamp":"20:08","source":"email","project":"Vertex","text":"Client expects update"},
+{"timestamp":"20:09","source":"calendar","project":"Vertex","text":"Integration sync tomorrow"},
+
+{"timestamp":"20:10","source":"slack","project":"Atlas","text":"Legal awaiting revised clause confirmation"},
+{"timestamp":"20:11","source":"email","project":"Atlas","text":"Client expects updated agreement"},
+{"timestamp":"20:12","source":"jira","project":"Atlas","text":"Contract revision pending"},
+{"timestamp":"20:13","source":"calendar","project":"Atlas","text":"Approval review Friday"},
+{"timestamp":"20:14","source":"slack","project":"Atlas","text":"Approval delay impacting planning"},
+
+{"timestamp":"20:15","source":"github","project":"Orion","text":"Optimization merged"},
+{"timestamp":"20:16","source":"jira","project":"Orion","text":"Ticket ORN-190 completed"},
+{"timestamp":"20:17","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"20:18","source":"github","project":"Orion","text":"Query efficiency improved"},
+{"timestamp":"20:19","source":"slack","project":"Orion","text":"Stable execution"},
+
+{"timestamp":"20:20","source":"slack","project":"Nova","text":"Coordination delay affecting timeline"},
+{"timestamp":"20:21","source":"github","project":"Nova","text":"Retry logic ready"},
+{"timestamp":"20:22","source":"email","project":"Vertex","text":"Client expects integration confirmation"},
+{"timestamp":"20:23","source":"slack","project":"Atlas","text":"Approval dependency persists"},
+{"timestamp":"20:24","source":"calendar","project":"Nova","text":"Dependency review"},
+{"timestamp":"20:25","source":"slack","project":"Orion","text":"Stable progress"},
+{"timestamp":"20:26","source":"github","project":"Orion","text":"Cleanup commit"},
+{"timestamp":"20:27","source":"email","project":"Nova","text":"Client awaiting timeline"},
+{"timestamp":"20:28","source":"slack","project":"Vertex","text":"Delivery confidence moderate"},
+{"timestamp":"20:29","source":"jira","project":"Atlas","text":"Approval awaiting legal review"},
+{"timestamp":"20:30","source":"slack","project":"Nova","text":"Dependency coordination ongoing"},
+{"timestamp":"20:31","source":"github","project":"Vertex","text":"Rendering optimized"},
+{"timestamp":"20:32","source":"slack","project":"Atlas","text":"Contract progressing slowly"},
+{"timestamp":"20:33","source":"email","project":"Nova","text":"Client expects update"},
+{"timestamp":"20:34","source":"calendar","project":"Vertex","text":"Integration meeting"},
+{"timestamp":"20:35","source":"slack","project":"Orion","text":"Execution stable"}
+]}

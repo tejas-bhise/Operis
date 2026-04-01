@@ -1,0 +1,36 @@
+{
+  "sample_id": "sample_02",
+  "window": "09:30-10:00",
+  "events": [
+    {"timestamp":"09:31","source":"slack","project":"Nova","text":"Client asked if payment retry fix will be stable before Friday release"},
+    {"timestamp":"09:32","source":"github","project":"Nova","text":"Commit improves error handling for webhook failures"},
+    {"timestamp":"09:33","source":"jira","project":"Nova","text":"Ticket NOVA-155 marked at risk due to unstable API dependency"},
+    {"timestamp":"09:34","source":"email","project":"Nova","text":"Client requested delivery assurance before investor review"},
+    {"timestamp":"09:35","source":"calendar","project":"Nova","text":"Release checkpoint meeting tomorrow 9:30 AM"},
+    {"timestamp":"09:36","source":"slack","project":"Vertex","text":"Client requested preview of analytics dashboard flow"},
+    {"timestamp":"09:37","source":"jira","project":"Vertex","text":"Ticket VTX-92 waiting stakeholder approval"},
+    {"timestamp":"09:38","source":"github","project":"Vertex","text":"Improved chart rendering speed by optimizing queries"},
+    {"timestamp":"09:39","source":"calendar","project":"Vertex","text":"Design review scheduled at 4 PM"},
+    {"timestamp":"09:40","source":"slack","project":"Vertex","text":"Team checking if data aggregation latency acceptable"},
+    {"timestamp":"09:41","source":"email","project":"Atlas","text":"Client asked whether pricing revision impacts milestone timeline"},
+    {"timestamp":"09:42","source":"slack","project":"Atlas","text":"Legal team reviewing compliance clause"},
+    {"timestamp":"09:43","source":"jira","project":"Atlas","text":"Contract approval pending finance signoff"},
+    {"timestamp":"09:44","source":"calendar","project":"Atlas","text":"Contract discussion tomorrow 2 PM"},
+    {"timestamp":"09:45","source":"slack","project":"Atlas","text":"Founder checking if scope update affects roadmap"},
+    {"timestamp":"09:46","source":"github","project":"Orion","text":"Performance tuning commit improves caching strategy"},
+    {"timestamp":"09:47","source":"github","project":"Orion","text":"Merged patch reducing query response time"},
+    {"timestamp":"09:48","source":"slack","project":"Orion","text":"Milestone validation completed successfully"},
+    {"timestamp":"09:49","source":"jira","project":"Orion","text":"Ticket ORN-60 moved to Done"},
+    {"timestamp":"09:50","source":"email","project":"Nova","text":"Client expects update before leadership sync"},
+    {"timestamp":"09:51","source":"slack","project":"Vertex","text":"PM tracking readiness confidence level"},
+    {"timestamp":"09:52","source":"github","project":"Nova","text":"Retry mechanism improved for webhook reliability"},
+    {"timestamp":"09:53","source":"slack","project":"Atlas","text":"Client asking confirmation on contract duration"},
+    {"timestamp":"09:54","source":"calendar","project":"Vertex","text":"Demo prep sync scheduled tomorrow"},
+    {"timestamp":"09:55","source":"slack","project":"Orion","text":"Team confirmed deployment stable in staging"},
+    {"timestamp":"09:56","source":"email","project":"Nova","text":"Reminder: confirm stability before public release"},
+
+    {"timestamp":"09:57","source":"slack","project":"Nova","text":"Engineering flagged intermittent payment retries still failing in edge cases"},
+    {"timestamp":"09:58","source":"jira","project":"Vertex","text":"Ticket VTX-92 delayed due to dependency clarification"},
+    {"timestamp":"09:59","source":"email","project":"Atlas","text":"Client negotiating revised scope before final approval"}
+  ]
+}

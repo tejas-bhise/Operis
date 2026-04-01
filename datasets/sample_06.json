@@ -1,0 +1,40 @@
+{
+"sample_id":"sample_06",
+"window":"13:00-13:30",
+"events":[
+{"timestamp":"13:00","source":"slack","project":"Nova","text":"Engineering velocity slower than expected this sprint"},
+{"timestamp":"13:01","source":"github","project":"Nova","text":"Refactor commit for transaction service"},
+{"timestamp":"13:02","source":"jira","project":"Nova","text":"Ticket NOVA-220 delayed due to resource bandwidth"},
+{"timestamp":"13:03","source":"email","project":"Nova","text":"Client expects progress update tomorrow"},
+{"timestamp":"13:04","source":"calendar","project":"Nova","text":"Progress sync scheduled Friday"},
+
+{"timestamp":"13:05","source":"slack","project":"Vertex","text":"Team reports reduced capacity this week"},
+{"timestamp":"13:06","source":"github","project":"Vertex","text":"Performance improvement commit merged"},
+{"timestamp":"13:07","source":"jira","project":"Vertex","text":"Ticket VTX-150 delayed due to design iteration"},
+{"timestamp":"13:08","source":"email","project":"Vertex","text":"Client awaiting confirmation on revised timeline"},
+{"timestamp":"13:09","source":"calendar","project":"Vertex","text":"Review meeting tomorrow"},
+
+{"timestamp":"13:10","source":"slack","project":"Atlas","text":"Legal review taking longer than expected"},
+{"timestamp":"13:11","source":"email","project":"Atlas","text":"Client expects confirmation of revised terms"},
+{"timestamp":"13:12","source":"jira","project":"Atlas","text":"Contract revision still pending"},
+{"timestamp":"13:13","source":"calendar","project":"Atlas","text":"Contract sync Friday"},
+{"timestamp":"13:14","source":"slack","project":"Atlas","text":"Execution timeline slipping slightly"},
+
+{"timestamp":"13:15","source":"github","project":"Orion","text":"Performance optimization merged"},
+{"timestamp":"13:16","source":"jira","project":"Orion","text":"Ticket ORN-102 completed"},
+{"timestamp":"13:17","source":"slack","project":"Orion","text":"Milestone progress stable"},
+{"timestamp":"13:18","source":"github","project":"Orion","text":"Refactor improves query latency"},
+{"timestamp":"13:19","source":"slack","project":"Orion","text":"Deployment stable"},
+
+{"timestamp":"13:20","source":"slack","project":"Nova","text":"Execution pace slightly below forecast"},
+{"timestamp":"13:21","source":"github","project":"Nova","text":"Code optimization commit"},
+{"timestamp":"13:22","source":"email","project":"Vertex","text":"Client requested updated timeline"},
+{"timestamp":"13:23","source":"slack","project":"Atlas","text":"Approval expected tomorrow"},
+{"timestamp":"13:24","source":"calendar","project":"Nova","text":"Sprint review meeting"},
+{"timestamp":"13:25","source":"slack","project":"Orion","text":"Performance metrics consistent"},
+{"timestamp":"13:26","source":"github","project":"Orion","text":"Cleanup commit"},
+{"timestamp":"13:27","source":"email","project":"Nova","text":"Client expects update before end of week"},
+{"timestamp":"13:28","source":"slack","project":"Vertex","text":"Execution delay minimal"},
+{"timestamp":"13:29","source":"jira","project":"Atlas","text":"Approval awaiting review"},
+{"timestamp":"13:30","source":"slack","project":"Nova","text":"Team expects recovery next sprint"}
+]}

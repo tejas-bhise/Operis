@@ -1,98 +1,207 @@
 """
-Rule-based signal detection for Operis.
-Classifies events into signal types using keyword matching.
-LLM is NOT used here — classification is fully deterministic.
+signal_detector.py
+UPDATED: Restricted to 8-type taxonomy. Adds impact_area and urgency_level.
+LLM is NOT used here — fully deterministic rule-based classification.
+
+SIGNAL TAXONOMY:
+  client_followup | deadline_risk | blocker | scope_change
+  milestone_progress | approval_delay | relationship_drop | execution_delay
 """
 
+import json
+import logging
 from datetime import datetime, timezone
-from app.db.session import SessionLocal
+
+from sqlalchemy.orm import Session
 from app.models.event import Event
 from app.models.signal import Signal
 
+logger = logging.getLogger("operis.signal_detector")
 
-SIGNAL_RULES = {
-    "client_risk": [
-        "update", "status", "eta", "timeline", "follow up",
-        "following up", "waiting", "any updates", "confirm when",
-    ],
-    "decision_required": [
-        "approval", "confirm", "sign off", "sign-off",
-        "review required", "waiting for", "confirmation required",
-        "approval needed",
-    ],
-    "progress": [
-        "completed", "merged", "deployed", "closed",
-        "finished", "achieved", "passed", "approved by",
-        "signed off", "ready for",
-    ],
-    "deadline_risk": [
-        "tomorrow", "24 hours", "48 hours", "demo scheduled",
-        "deadline", "end of day", "by tomorrow", "presentation",
-        "milestone review",
-    ],
-    "blocker": [
-        "blocked", "blocker", "issue", "error", "delay",
-        "stall", "halted", "failing", "unresolved", "investigating",
-    ],
+# ── TAXONOMY ─────────────────────────────────────────────────────────────────
+SIGNAL_TAXONOMY = {
+    "client_followup": {
+        "keywords": ["follow-up","follow up","still no update","any update","timeline confirmation",
+                     "escalat","board meeting","4th","3rd","no response","awaiting reply"],
+        "impact_area": "relationship",
+        "base_urgency": 0.7,
+    },
+    "deadline_risk": {
+        "keywords": ["deadline","due today","due tomorrow","hours remaining","go-live",
+                     "end of week","by friday","by thursday","expires","presentation","demo scheduled"],
+        "impact_area": "delivery",
+        "base_urgency": 0.85,
+    },
+    "blocker": {
+        "keywords": ["blocked","blocker","failing","error","500","503","504","unresolved",
+                     "exhausted","down","incident","p0","ci failing","pipeline failing","cannot proceed"],
+        "impact_area": "execution",
+        "base_urgency": 0.9,
+    },
+    "scope_change": {
+        "keywords": ["scope change","change request","adding feature","must-have","real-time",
+                     "sso","non-negotiable","requested addition","new requirement","contract clause"],
+        "impact_area": "delivery",
+        "base_urgency": 0.75,
+    },
+    "milestone_progress": {
+        "keywords": ["completed","merged","deployed","closed","delivered","sprint done",
+                     "velocity","all green","on track","ahead of schedule","milestone hit"],
+        "impact_area": "delivery",
+        "base_urgency": 0.1,
+    },
+    "approval_delay": {
+        "keywords": ["approval pending","approval needed","sign-off","sign off","waiting on approval",
+                     "no response","unresponsive","review required","pending review","not approved"],
+        "impact_area": "execution",
+        "base_urgency": 0.65,
+    },
+    "relationship_drop": {
+        "keywords": ["nps","switching vendor","evaluate alternative","escalate to legal",
+                     "concerned","unacceptable","contract breach","silence for","frustrated",
+                     "considering alternatives","revenue at risk","arn","140k","85k","$"],
+        "impact_area": "revenue",
+        "base_urgency": 0.85,
+    },
+    "execution_delay": {
+        "keywords": ["delay","capacity reduced","team member sick","milestone missed","behind schedule",
+                     "descope","not completed","slipping","resource constraint","engineer unavailable"],
+        "impact_area": "execution",
+        "base_urgency": 0.6,
+    },
 }
 
-PRIORITY_MAP = {
-    "blocker":           9,
-    "client_risk":       8,
-    "decision_required": 7,
-    "deadline_risk":     6,
-    "progress":          3,
-    "stable":            1,
+URGENCY_LABELS = {
+    (0.0, 0.3): "low",
+    (0.3, 0.6): "medium",
+    (0.6, 0.85): "high",
+    (0.85, 1.01): "critical",
 }
 
-
-def detect_signal_type(event_type: str, raw_text: str) -> str:
-    """
-    Determines signal type from event_type and raw_text using keyword rules.
-    Called by signal_classifier.py in batch processing pipeline.
-    Returns signal type string.
-    """
-    text_lower = raw_text.lower()
-    for signal_type, keywords in SIGNAL_RULES.items():
-        if any(kw in text_lower for kw in keywords):
-            return signal_type
-    return "stable"
+def _urgency_label(score: float) -> str:
+    for (lo, hi), label in URGENCY_LABELS.items():
+        if lo <= score < hi:
+            return label
+    return "medium"
 
 
-def classify_event(event: Event) -> dict:
+def detect_signal_type(event_type: str, raw_text: str) -> tuple[str, str, float]:
     """
-    Applies keyword rules to a full Event ORM object.
-    Returns dict with signal_type, priority_score, and reason.
-    Used for single-event classification outside the batch pipeline.
+    Returns (signal_type, impact_area, base_urgency_score).
+    Matches against taxonomy keywords in order.
+    Falls back to milestone_progress for progress/update types.
     """
-    signal_type = detect_signal_type(event.event_type, event.raw_text)
-    return {
-        "signal_type":    signal_type,
-        "priority_score": PRIORITY_MAP.get(signal_type, 1),
-        "reason":         event.raw_text,
+    t = raw_text.lower()
+
+    for stype, cfg in SIGNAL_TAXONOMY.items():
+        if any(kw in t for kw in cfg["keywords"]):
+            return stype, cfg["impact_area"], cfg["base_urgency"]
+
+    # Fall back using event_type
+    fallback_map = {
+        "client_followup":  ("client_followup", "relationship", 0.7),
+        "blocker":          ("blocker", "execution", 0.9),
+        "deadline_risk":    ("deadline_risk", "delivery", 0.85),
+        "scope_change":     ("scope_change", "delivery", 0.75),
+        "approval_pending": ("approval_delay", "execution", 0.65),
+        "progress_update":  ("milestone_progress", "delivery", 0.1),
+        "resolved":         ("milestone_progress", "delivery", 0.1),
+        "risk_escalated":   ("relationship_drop", "revenue", 0.85),
     }
+    if event_type in fallback_map:
+        return fallback_map[event_type]
+
+    return "milestone_progress", "delivery", 0.1
 
 
-def process_event_to_signal(event: Event) -> Signal:
+def classify_events_to_signals(
+    db: Session,
+    events: list[Event],
+    cycle_signals_so_far: list[Signal] | None = None,
+) -> tuple[list[Signal], int]:
     """
-    Classifies a single event and saves the resulting signal to the database.
-    Returns the saved Signal object.
-    """
-    result = classify_event(event)
+    Classifies events into signals using taxonomy rules.
+    Applies suppression before saving.
+    Returns (saved_signals, suppressed_count).
 
-    db = SessionLocal()
-    try:
+    Suppression rules:
+    - priority_score < 0.3
+    - Duplicate signal type+project in this cycle
+    - Internal noise (no client/delivery impact)
+    """
+    if cycle_signals_so_far is None:
+        cycle_signals_so_far = []
+
+    seen = {(s.project, s.signal_type) for s in cycle_signals_so_far}
+    saved = []
+    suppressed = 0
+
+    for event in events:
+        raw_text = event.raw_text or ""
+        project  = event.project or "Unknown"
+
+        stype, impact_area, base_urgency = detect_signal_type(event.event_type, raw_text)
+
+        # Compute confidence: simple heuristic on text length + source variety
+        text_len = len(raw_text)
+        confidence = min(0.5 + (text_len / 600), 0.95)
+
+        # Compute priority score: 0.35u + 0.30i + 0.20c + 0.15f
+        impact_score = {
+            "revenue":      0.9,
+            "relationship": 0.8,
+            "delivery":     0.7,
+            "execution":    0.6,
+        }.get(impact_area, 0.5)
+        frequency_score = 0.5  # base; would increase if signal repeated across cycles
+        priority_score = (
+            0.35 * base_urgency +
+            0.30 * impact_score +
+            0.20 * confidence +
+            0.15 * frequency_score
+        )
+
+        # ── SUPPRESSION ──────────────────────────────────────────────────
+        # Rule 1: too low priority
+        if priority_score < 0.15:
+            suppressed += 1
+            logger.debug(f"Suppressed (low priority {priority_score:.2f}): {project}/{stype}")
+            continue
+
+        # Rule 2: duplicate in this cycle
+        key = (project, stype)
+        if key in seen:
+            suppressed += 1
+            logger.debug(f"Suppressed (duplicate): {project}/{stype}")
+            continue
+
+        # Rule 3: pure noise — no keywords, short text, generic update
+        if stype == "milestone_progress" and len(raw_text) < 60:
+            suppressed += 1
+            logger.debug(f"Suppressed (noise): {project}/{stype}")
+            continue
+
+        seen.add(key)
+
         signal = Signal(
-            event_id=event.id,
-            signal_type=result["signal_type"],
-            priority_score=result["priority_score"],
-            reason=result["reason"],
-            project=event.project,
-            created_at=datetime.now(timezone.utc),
+            event_id         = event.id,
+            signal_type      = stype,
+            priority_score   = round(priority_score, 3),
+            reason           = raw_text,
+            project          = project,
+            project_name     = project,
+            impact_area      = impact_area,
+            urgency_level    = _urgency_label(base_urgency),
+            confidence_score = round(confidence, 3),
+            source_event_ids = json.dumps([event.id]),
+            created_at       = event.created_at,
         )
         db.add(signal)
-        db.commit()
-        db.refresh(signal)
-        return signal
-    finally:
-        db.close()
+        saved.append(signal)
+
+    db.commit()
+    for s in saved:
+        db.refresh(s)
+
+    logger.info(f"Signals: {len(saved)} saved, {suppressed} suppressed")
+    return saved, suppressed

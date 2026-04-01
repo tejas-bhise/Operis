@@ -1,66 +1,82 @@
 """
-Calculates per-project health scores using signals within the analysis window.
-Numeric scoring is fully algorithmic. Explanation text is delegated to Gemini.
+health_engine.py
+Computes project health score (0–100) and status from signal portfolio.
+health_score is required NOT NULL in DB — always set explicitly.
 """
 
+import logging
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from datetime import datetime
 from app.models.signal import Signal
-from app.core.constants import (
-    PROJECTS, HEALTH_BASELINE, HEALTH_PENALTIES, HEALTH_BONUS,
-    HEALTH_HEALTHY_MIN, HEALTH_WARNING_MIN,
-    HEALTH_STATUS_HEALTHY, HEALTH_STATUS_WARNING, HEALTH_STATUS_AT_RISK,
-)
+from app.models.project_health import ProjectHealth
+
+logger = logging.getLogger("operis.health_engine")
+
+# Signal type → score delta (base 100, subtract bad signals)
+HEALTH_WEIGHTS = {
+    "blocker":            -30,
+    "relationship_drop":  -25,
+    "deadline_risk":      -20,
+    "client_followup":    -15,
+    "scope_change":       -15,
+    "approval_delay":     -10,
+    "execution_delay":    -10,
+    "milestone_progress": +10,
+}
+
+def _score_to_status(score: float) -> str:
+    if score <= 30:  return "Critical"
+    if score <= 50:  return "At Risk"
+    if score <= 70:  return "Watch"
+    return "Healthy"
 
 
-def calculate_health_score(db: Session, project: str, window_start: datetime) -> dict:
+def update_project_health(db: Session, signals: list[Signal]) -> list[ProjectHealth]:
     """
-    Computes health score (0–100) for one project using signals within the window.
-    Returns: project, score, status, contributing_factors list (used in LLM prompt).
+    Recomputes health_score (0–100) and status for all projects in current signals.
+    Upserts ProjectHealth rows. health_score is always set — never None.
     """
-    signals = (
-        db.query(Signal)
-        .filter(Signal.project == project, Signal.created_at >= window_start)
-        .all()
-    )
-
-    score = HEALTH_BASELINE
-    factors = []
+    project_scores: dict[str, float]       = {}
+    project_reasons: dict[str, list[str]]  = {}
 
     for sig in signals:
-        penalty = HEALTH_PENALTIES.get(sig.signal_type)
-        bonus = HEALTH_BONUS.get(sig.signal_type)
+        proj = sig.project
+        weight = HEALTH_WEIGHTS.get(sig.signal_type, 0)
+        # Start at 100, apply weights
+        project_scores[proj] = project_scores.get(proj, 100.0) + weight
+        if sig.signal_type != "milestone_progress":
+            project_reasons.setdefault(proj, []).append(sig.signal_type)
 
-        if penalty:
-            # Extra penalty for high-urgency deadline (priority boosted above base 6)
-            if sig.signal_type == "deadline_risk" and sig.priority_score >= 7:
-                score += penalty - 3
-            else:
-                score += penalty
-            factors.append(sig.signal_type)
-        elif bonus:
-            score += bonus
-            factors.append("progress")
+    results = []
+    now = datetime.now(timezone.utc)
 
-    score = round(max(0.0, min(100.0, score)), 1)
+    for project, raw_score in project_scores.items():
+        health_score = round(max(0.0, min(100.0, raw_score)), 1)   # clamp 0–100
+        status       = _score_to_status(health_score)
+        reason_parts = list(set(project_reasons.get(project, [])))
+        reason       = ", ".join(reason_parts) if reason_parts else "No critical signals"
 
-    if score >= HEALTH_HEALTHY_MIN:
-        status = HEALTH_STATUS_HEALTHY
-    elif score >= HEALTH_WARNING_MIN:
-        status = HEALTH_STATUS_WARNING
-    else:
-        status = HEALTH_STATUS_AT_RISK
+        existing = db.query(ProjectHealth).filter_by(project=project).first()
+        if existing:
+            existing.health_score = health_score
+            existing.status       = status
+            existing.reason       = reason
+            existing.updated_at   = now
+            results.append(existing)
+        else:
+            ph = ProjectHealth(
+                project      = project,
+                health_score = health_score,   # explicitly set — never None
+                status       = status,
+                reason       = reason,
+                created_at   = now,
+            )
+            db.add(ph)
+            results.append(ph)
 
-    unique_factors = list(dict.fromkeys(factors)) if factors else ["no significant signals detected"]
+    db.commit()
+    for r in results:
+        db.refresh(r)
 
-    return {
-        "project": project,
-        "score": score,
-        "status": status,
-        "contributing_factors": unique_factors,
-    }
-
-
-def calculate_all_projects_health(db: Session, window_start: datetime) -> list[dict]:
-    """Calculates and returns health data for all four monitored projects."""
-    return [calculate_health_score(db, project, window_start) for project in PROJECTS]
+    logger.info(f"Health updated: {[(r.project, r.status, r.health_score) for r in results]}")
+    return results

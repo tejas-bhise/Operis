@@ -1,0 +1,45 @@
+{
+"sample_id":"sample_14",
+"window":"21:00-21:30",
+"events":[
+{"timestamp":"21:00","source":"slack","project":"Nova","text":"Retry fix validated successfully"},
+{"timestamp":"21:01","source":"github","project":"Nova","text":"Hotfix merged resolving timeout"},
+{"timestamp":"21:02","source":"jira","project":"Nova","text":"Ticket NOVA-360 resolved"},
+{"timestamp":"21:03","source":"email","project":"Nova","text":"Client acknowledged fix"},
+{"timestamp":"21:04","source":"calendar","project":"Nova","text":"Recovery review tomorrow"},
+
+{"timestamp":"21:05","source":"slack","project":"Vertex","text":"UI improvement accepted"},
+{"timestamp":"21:06","source":"jira","project":"Vertex","text":"Ticket VTX-220 completed"},
+{"timestamp":"21:07","source":"github","project":"Vertex","text":"Performance optimization merged"},
+{"timestamp":"21:08","source":"email","project":"Vertex","text":"Client confirmed acceptance"},
+{"timestamp":"21:09","source":"calendar","project":"Vertex","text":"Demo rescheduled"},
+
+{"timestamp":"21:10","source":"slack","project":"Atlas","text":"Contract approved"},
+{"timestamp":"21:11","source":"email","project":"Atlas","text":"Client signed agreement"},
+{"timestamp":"21:12","source":"jira","project":"Atlas","text":"Approval completed"},
+{"timestamp":"21:13","source":"calendar","project":"Atlas","text":"Kickoff meeting scheduled"},
+{"timestamp":"21:14","source":"slack","project":"Atlas","text":"Relationship stabilized"},
+
+{"timestamp":"21:15","source":"github","project":"Orion","text":"Performance optimization merged"},
+{"timestamp":"21:16","source":"jira","project":"Orion","text":"Ticket ORN-210 completed"},
+{"timestamp":"21:17","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"21:18","source":"github","project":"Orion","text":"Efficiency improvement commit"},
+{"timestamp":"21:19","source":"slack","project":"Orion","text":"Stable deployment"},
+
+{"timestamp":"21:20","source":"slack","project":"Nova","text":"Execution confidence improved"},
+{"timestamp":"21:21","source":"github","project":"Nova","text":"Cleanup commit"},
+{"timestamp":"21:22","source":"email","project":"Vertex","text":"Client satisfied with update"},
+{"timestamp":"21:23","source":"slack","project":"Atlas","text":"Approval completed successfully"},
+{"timestamp":"21:24","source":"calendar","project":"Nova","text":"Sprint planning"},
+{"timestamp":"21:25","source":"slack","project":"Orion","text":"Stable performance"},
+{"timestamp":"21:26","source":"github","project":"Orion","text":"Refactor commit"},
+{"timestamp":"21:27","source":"email","project":"Nova","text":"Client positive feedback"},
+{"timestamp":"21:28","source":"slack","project":"Vertex","text":"Delivery confidence high"},
+{"timestamp":"21:29","source":"jira","project":"Atlas","text":"Contract finalized"},
+{"timestamp":"21:30","source":"slack","project":"Nova","text":"System stabilized"},
+{"timestamp":"21:31","source":"github","project":"Vertex","text":"Rendering optimized"},
+{"timestamp":"21:32","source":"slack","project":"Atlas","text":"Healthy partnership"},
+{"timestamp":"21:33","source":"email","project":"Nova","text":"Client confirmed milestone"},
+{"timestamp":"21:34","source":"calendar","project":"Vertex","text":"Demo tomorrow"},
+{"timestamp":"21:35","source":"slack","project":"Orion","text":"Execution stable"}
+]}

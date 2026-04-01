@@ -1,0 +1,40 @@
+{
+"sample_id":"sample_04",
+"window":"11:00-11:30",
+"events":[
+{"timestamp":"11:00","source":"calendar","project":"Nova","text":"Investor demo scheduled today 4 PM"},
+{"timestamp":"11:01","source":"slack","project":"Nova","text":"Client expects deployment confirmation before demo"},
+{"timestamp":"11:02","source":"github","project":"Nova","text":"Fix applied for webhook timeout issue"},
+{"timestamp":"11:03","source":"jira","project":"Nova","text":"Ticket NOVA-201 marked critical"},
+{"timestamp":"11:04","source":"slack","project":"Nova","text":"Engineer validating stability of retry logic"},
+{"timestamp":"11:05","source":"email","project":"Nova","text":"Client asked readiness status for presentation"},
+
+{"timestamp":"11:06","source":"calendar","project":"Vertex","text":"Product review today 5 PM"},
+{"timestamp":"11:07","source":"slack","project":"Vertex","text":"PM tracking completion of analytics dashboard"},
+{"timestamp":"11:08","source":"github","project":"Vertex","text":"Performance improvement commit merged"},
+{"timestamp":"11:09","source":"jira","project":"Vertex","text":"Ticket VTX-140 awaiting final QA approval"},
+{"timestamp":"11:10","source":"slack","project":"Vertex","text":"QA flagged minor visual inconsistency"},
+{"timestamp":"11:11","source":"email","project":"Vertex","text":"Client expects updated preview before review"},
+
+{"timestamp":"11:12","source":"calendar","project":"Atlas","text":"Contract approval deadline today"},
+{"timestamp":"11:13","source":"email","project":"Atlas","text":"Client awaiting legal confirmation"},
+{"timestamp":"11:14","source":"jira","project":"Atlas","text":"Legal approval pending"},
+{"timestamp":"11:15","source":"slack","project":"Atlas","text":"Founder concerned about timeline impact"},
+{"timestamp":"11:16","source":"slack","project":"Atlas","text":"Client asked confirmation on final terms"},
+
+{"timestamp":"11:17","source":"github","project":"Orion","text":"Deployment optimization merged"},
+{"timestamp":"11:18","source":"jira","project":"Orion","text":"Ticket ORN-88 closed"},
+{"timestamp":"11:19","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"11:20","source":"github","project":"Orion","text":"Performance improvement commit"},
+{"timestamp":"11:21","source":"slack","project":"Orion","text":"Deployment validated"},
+
+{"timestamp":"11:22","source":"slack","project":"Nova","text":"PM concerned multiple deadlines create delivery risk"},
+{"timestamp":"11:23","source":"github","project":"Nova","text":"Patch improves retry resilience"},
+{"timestamp":"11:24","source":"email","project":"Vertex","text":"Client expects readiness confirmation"},
+{"timestamp":"11:25","source":"calendar","project":"Nova","text":"Internal readiness check scheduled"},
+{"timestamp":"11:26","source":"slack","project":"Atlas","text":"Approval delay impacting contract finalization"},
+{"timestamp":"11:27","source":"github","project":"Vertex","text":"UI performance optimized"},
+{"timestamp":"11:28","source":"slack","project":"Orion","text":"Stable performance metrics confirmed"},
+{"timestamp":"11:29","source":"email","project":"Nova","text":"Client awaiting confirmation before demo"},
+{"timestamp":"11:30","source":"slack","project":"Vertex","text":"PM confirming final readiness"}
+]}

@@ -1,0 +1,45 @@
+{
+"sample_id":"sample_08",
+"window":"15:00-15:30",
+"events":[
+{"timestamp":"15:00","source":"email","project":"Atlas","text":"Client concerned about repeated delays"},
+{"timestamp":"15:01","source":"slack","project":"Atlas","text":"Client questioning delivery reliability"},
+{"timestamp":"15:02","source":"jira","project":"Atlas","text":"Approval delayed due to trust concerns"},
+{"timestamp":"15:03","source":"calendar","project":"Atlas","text":"Escalation meeting scheduled"},
+{"timestamp":"15:04","source":"slack","project":"Atlas","text":"Relationship sentiment declining"},
+
+{"timestamp":"15:05","source":"slack","project":"Nova","text":"Client expects stable API performance"},
+{"timestamp":"15:06","source":"jira","project":"Nova","text":"Ticket NOVA-260 flagged risk"},
+{"timestamp":"15:07","source":"github","project":"Nova","text":"Fix applied for retry logic"},
+{"timestamp":"15:08","source":"email","project":"Nova","text":"Client awaiting confidence confirmation"},
+{"timestamp":"15:09","source":"calendar","project":"Nova","text":"Review meeting tomorrow"},
+
+{"timestamp":"15:10","source":"slack","project":"Vertex","text":"Client feedback indicates dissatisfaction"},
+{"timestamp":"15:11","source":"jira","project":"Vertex","text":"Approval pending additional review"},
+{"timestamp":"15:12","source":"github","project":"Vertex","text":"UI refinement commit"},
+{"timestamp":"15:13","source":"email","project":"Vertex","text":"Client requested revision"},
+{"timestamp":"15:14","source":"calendar","project":"Vertex","text":"Design discussion tomorrow"},
+
+{"timestamp":"15:15","source":"github","project":"Orion","text":"Performance improvement merged"},
+{"timestamp":"15:16","source":"jira","project":"Orion","text":"Ticket ORN-135 closed"},
+{"timestamp":"15:17","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"15:18","source":"github","project":"Orion","text":"Optimization commit"},
+{"timestamp":"15:19","source":"slack","project":"Orion","text":"System stable"},
+
+{"timestamp":"15:20","source":"email","project":"Atlas","text":"Client considering alternative vendor"},
+{"timestamp":"15:21","source":"slack","project":"Atlas","text":"Legal escalation possibility"},
+{"timestamp":"15:22","source":"jira","project":"Atlas","text":"Contract uncertainty detected"},
+{"timestamp":"15:23","source":"calendar","project":"Atlas","text":"Relationship recovery discussion"},
+{"timestamp":"15:24","source":"slack","project":"Atlas","text":"PM monitoring relationship risk"},
+{"timestamp":"15:25","source":"github","project":"Nova","text":"Performance stability improved"},
+{"timestamp":"15:26","source":"slack","project":"Vertex","text":"Team improving UI responsiveness"},
+{"timestamp":"15:27","source":"email","project":"Nova","text":"Client expects assurance"},
+{"timestamp":"15:28","source":"jira","project":"Vertex","text":"Ticket review ongoing"},
+{"timestamp":"15:29","source":"slack","project":"Orion","text":"Stable execution"},
+{"timestamp":"15:30","source":"github","project":"Orion","text":"Query optimization"},
+{"timestamp":"15:31","source":"slack","project":"Atlas","text":"Trust needs rebuilding"},
+{"timestamp":"15:32","source":"email","project":"Atlas","text":"Client awaiting reassurance"},
+{"timestamp":"15:33","source":"slack","project":"Nova","text":"Execution improving"},
+{"timestamp":"15:34","source":"calendar","project":"Atlas","text":"Follow-up meeting scheduled"},
+{"timestamp":"15:35","source":"slack","project":"Vertex","text":"Delivery confidence improving"}
+]}

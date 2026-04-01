@@ -1,0 +1,40 @@
+{
+"sample_id":"sample_05",
+"window":"12:00-12:30",
+"events":[
+{"timestamp":"12:00","source":"slack","project":"Nova","text":"No client response regarding API integration confirmation"},
+{"timestamp":"12:01","source":"email","project":"Nova","text":"Follow-up sent requesting timeline clarification"},
+{"timestamp":"12:02","source":"jira","project":"Nova","text":"Ticket NOVA-210 blocked awaiting client clarification"},
+{"timestamp":"12:03","source":"github","project":"Nova","text":"Retry improvement commit merged"},
+{"timestamp":"12:04","source":"calendar","project":"Nova","text":"Follow-up call scheduled tomorrow"},
+
+{"timestamp":"12:05","source":"slack","project":"Vertex","text":"Client silent on dashboard feature confirmation"},
+{"timestamp":"12:06","source":"jira","project":"Vertex","text":"Approval pending for UI layout"},
+{"timestamp":"12:07","source":"github","project":"Vertex","text":"Chart optimization commit"},
+{"timestamp":"12:08","source":"email","project":"Vertex","text":"Reminder sent requesting feedback"},
+{"timestamp":"12:09","source":"calendar","project":"Vertex","text":"Client sync scheduled Friday"},
+
+{"timestamp":"12:10","source":"slack","project":"Atlas","text":"Contract revision awaiting client confirmation"},
+{"timestamp":"12:11","source":"email","project":"Atlas","text":"Client has not responded regarding pricing update"},
+{"timestamp":"12:12","source":"jira","project":"Atlas","text":"Approval delayed due to client silence"},
+{"timestamp":"12:13","source":"calendar","project":"Atlas","text":"Legal follow-up scheduled"},
+{"timestamp":"12:14","source":"slack","project":"Atlas","text":"PM evaluating relationship risk"},
+
+{"timestamp":"12:15","source":"github","project":"Orion","text":"Query optimization merged"},
+{"timestamp":"12:16","source":"jira","project":"Orion","text":"Ticket ORN-95 completed"},
+{"timestamp":"12:17","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"12:18","source":"github","project":"Orion","text":"Performance patch applied"},
+{"timestamp":"12:19","source":"slack","project":"Orion","text":"Stable delivery confirmed"},
+
+{"timestamp":"12:20","source":"email","project":"Nova","text":"Client has not confirmed timeline yet"},
+{"timestamp":"12:21","source":"slack","project":"Vertex","text":"Waiting for stakeholder approval"},
+{"timestamp":"12:22","source":"github","project":"Nova","text":"Fallback logic improved"},
+{"timestamp":"12:23","source":"slack","project":"Atlas","text":"Client inactivity impacting contract finalization"},
+{"timestamp":"12:24","source":"calendar","project":"Nova","text":"Escalation review tomorrow"},
+{"timestamp":"12:25","source":"slack","project":"Orion","text":"Performance validated stable"},
+{"timestamp":"12:26","source":"github","project":"Orion","text":"Code cleanup commit merged"},
+{"timestamp":"12:27","source":"email","project":"Vertex","text":"Client follow-up reminder sent"},
+{"timestamp":"12:28","source":"slack","project":"Nova","text":"Risk of delay if client confirmation not received"},
+{"timestamp":"12:29","source":"jira","project":"Atlas","text":"Approval pending client confirmation"},
+{"timestamp":"12:30","source":"slack","project":"Vertex","text":"PM tracking inactivity risk"}
+]}

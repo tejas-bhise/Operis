@@ -1,24 +1,48 @@
 """
-Assigns numeric priority scores to classified signals.
-Scores are deterministic and based on signal type with contextual adjustments.
-Scale: 1 (informational) → 10 (critical).
+priority_calculator.py
+UPDATED: Explicit formula implementation.
+priority_score = 0.35*urgency + 0.30*impact + 0.20*confidence + 0.15*frequency
+
+All scores normalized 0–1.
 """
 
-from app.core.constants import PRIORITY_SCORES
+URGENCY_SCORES = {
+    "client_followup":    0.70,
+    "deadline_risk":      0.85,
+    "blocker":            0.90,
+    "scope_change":       0.75,
+    "milestone_progress": 0.10,
+    "approval_delay":     0.65,
+    "relationship_drop":  0.85,
+    "execution_delay":    0.60,
+}
+
+IMPACT_SCORES = {
+    "revenue":      0.90,
+    "relationship": 0.80,
+    "delivery":     0.70,
+    "execution":    0.60,
+}
 
 
-def calculate_priority(signal_type: str, raw_text: str) -> float:
+def calculate_priority(
+    signal_type: str,
+    raw_text: str,
+    impact_area: str = "delivery",
+    confidence: float = 0.6,
+    frequency: float = 0.5,
+) -> float:
     """
-    Returns priority score (1–10) for a signal.
-    Applies contextual +1 boost for 24-hour deadline urgency and escalated risk language.
+    Computes normalized priority score using defined formula.
+    Returns float 0.0–1.0 rounded to 3 decimal places.
     """
-    base = float(PRIORITY_SCORES.get(signal_type, 2))
-    text = raw_text.lower()
+    urgency   = URGENCY_SCORES.get(signal_type, 0.5)
+    impact    = IMPACT_SCORES.get(impact_area, 0.6)
 
-    if signal_type == "deadline_risk" and any(kw in text for kw in ["24 hours", "tomorrow", "today", "end of day", "eod"]):
-        base = min(base + 1.0, 10.0)
-
-    if signal_type == "risk" and any(kw in text for kw in ["escalat", "still waiting", "again", "pending response"]):
-        base = min(base + 1.0, 10.0)
-
-    return base
+    score = (
+        0.35 * urgency +
+        0.30 * impact  +
+        0.20 * confidence +
+        0.15 * frequency
+    )
+    return round(min(score, 1.0), 3)

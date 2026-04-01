@@ -1,67 +1,135 @@
+"""
+digest_routes.py
+GET /digest/latest  — accepts optional ?sample_id= query param
+GET /digest/list    — recent digests with metadata
+All data is parsed from the `content` JSON column.
+"""
+
 import json
-from fastapi import APIRouter, Depends
+import logging
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
+
 from app.db.session import get_db
 from app.models.digest import Digest
 
-router = APIRouter()
+logger = logging.getLogger("operis.digest_routes")
+router = APIRouter(prefix="/digest", tags=["Digest"])
 
-def safe_parse(value, fallback):
-    if not value:
-        return fallback
-    if isinstance(value, (list, dict)):
-        return value
-    try:
-        return json.loads(value)
-    except Exception:
-        # Handle Python set-style string: {"item1","item2"}
-        if isinstance(value, str) and value.startswith("{"):
-            try:
-                items = value.strip("{}").split('","')
-                return [i.strip('"') for i in items if i.strip('"')]
-            except Exception:
-                return fallback
-        return fallback
 
-@router.get("/digest/latest")
-def get_latest_digest(db: Session = Depends(get_db)):
-    digest = db.query(Digest).order_by(Digest.created_at.desc()).first()
-    if not digest:
+def _parse_digest(digest: Digest) -> dict:
+    """Parse a Digest row into a clean dict. Never raises — always returns something."""
+    if digest is None:
         return {
-            "summary": "No digest available yet. System is warming up...",
-            "actions": [],
+            "status": "pending",
+            "summary": "System initializing. First digest will be ready shortly.",
             "decisions": [],
             "risks": [],
             "changes": [],
+            "project_health": [],
             "stable_summary": "",
-            "snapshot": {},
-            "risk_count": 0,
-            "decision_count": 0,
-            "created_at": None
+            "suppressed_note": "",
+            "sample_id": None,
+            "digest_id": None,
+            "created_at": None,
         }
-    return {
-        "summary": digest.summary or "",
-        "actions": safe_parse(digest.actions, []),
-        "decisions": safe_parse(digest.decisions, []),
-        "risks": safe_parse(digest.risks, []),
-        "changes": safe_parse(digest.changes, []),
-        "stable_summary": digest.stable_summary or "",
-        "snapshot": safe_parse(digest.snapshot, {}),
-        "risk_count": digest.risk_count or 0,
-        "decision_count": digest.decision_count or 0,
-        "created_at": str(digest.created_at) if digest.created_at else None,
-    }
 
-@router.get("/digest/timeline")
-def get_timeline(db: Session = Depends(get_db)):
-    digests = db.query(Digest).order_by(Digest.created_at.desc()).limit(20).all()
-    return [
-        {
-            "id": d.id,
-            "created_at": str(d.created_at),
-            "risk_count": d.risk_count or 0,
-            "decision_count": d.decision_count or 0,
-            "summary": d.summary or "",
+    if not digest.content:
+        return {
+            "status": "empty",
+            "summary": "Digest record exists but has no content yet.",
+            "decisions": [],
+            "risks": [],
+            "changes": [],
+            "project_health": [],
+            "stable_summary": "",
+            "suppressed_note": "",
+            "sample_id": digest.sample_id,
+            "digest_id": digest.id,
+            "created_at": digest.created_at.isoformat() if digest.created_at else None,
         }
-        for d in digests
-    ]
+
+    try:
+        data = json.loads(digest.content)
+        # Ensure all expected keys exist with safe defaults
+        data.setdefault("decisions", [])
+        data.setdefault("risks", [])
+        data.setdefault("changes", [])
+        data.setdefault("project_health", [])
+        data.setdefault("stable_summary", "")
+        data.setdefault("suppressed_note", "")
+        data.setdefault("summary", "")
+        # Attach metadata
+        data["digest_id"]  = digest.id
+        data["created_at"] = digest.created_at.isoformat() if digest.created_at else None
+        data["sample_id"]  = digest.sample_id
+        return data
+    except Exception as e:
+        logger.error(f"Digest parse error for id={digest.id}: {e}")
+        safe_raw = (digest.content or "")[:500]
+        return {
+            "error": "Digest format error",
+            "raw": safe_raw,
+            "digest_id": digest.id,
+            "sample_id": digest.sample_id,
+        }
+
+
+@router.get("/latest")
+def get_latest_digest(
+    sample_id: str | None = Query(default=None, description="Optional dataset sample_id"),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns the latest digest, optionally filtered by sample_id.
+    Frontend passes ?sample_id=sample_03 to get the digest for that dataset.
+    Falls back to globally latest if that sample hasn't been processed yet.
+    """
+    try:
+        query = db.query(Digest).order_by(Digest.created_at.desc())
+
+        if sample_id:
+            filtered = query.filter(Digest.sample_id == sample_id).first()
+            if filtered:
+                return _parse_digest(filtered)
+            logger.warning(f"No digest for sample_id={sample_id}, returning latest")
+
+        latest = query.first()
+        return _parse_digest(latest)  # handles None safely
+
+    except Exception as e:
+        logger.error(f"get_latest_digest error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Digest query failed: {str(e)}")
+
+
+@router.get("/list")
+def list_digests(
+    limit: int = Query(default=10, le=50),
+    db: Session = Depends(get_db),
+):
+    """Returns recent digests with metadata. Useful for evaluation."""
+    try:
+        digests = (
+            db.query(Digest)
+            .order_by(Digest.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+        result = []
+        for d in digests:
+            preview = ""
+            if d.content:
+                try:
+                    preview = json.loads(d.content).get("summary", "")[:120]
+                except Exception:
+                    preview = d.content[:120]
+            result.append({
+                "id":         d.id,
+                "sample_id":  d.sample_id,
+                "created_at": d.created_at.isoformat() if d.created_at else None,
+                "preview":    preview,
+            })
+        return result
+    except Exception as e:
+        logger.error(f"list_digests error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Digest list failed: {str(e)}")

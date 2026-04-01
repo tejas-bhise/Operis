@@ -1,0 +1,61 @@
+{
+  "sample_id": "sample_01",
+  "window": "09:00-09:30",
+  "events": [
+
+    {
+      "timestamp": "09:02",
+      "source": "slack",
+      "project": "Nova",
+      "text": "Client asked for update on payment integration timeline"
+    },
+    {
+      "timestamp": "09:04",
+      "source": "github",
+      "project": "Nova",
+      "text": "Stripe webhook failing integration tests"
+    },
+    {
+      "timestamp": "09:06",
+      "source": "jira",
+      "project": "Nova",
+      "text": "Ticket #421 marked blocked due to API errors"
+    },
+    {
+      "timestamp": "09:10",
+      "source": "slack",
+      "project": "Vertex",
+      "text": "Reminder: demo scheduled tomorrow 10am"
+    },
+    {
+      "timestamp": "09:12",
+      "source": "calendar",
+      "project": "Vertex",
+      "text": "Client demo scheduled"
+    },
+    {
+      "timestamp": "09:15",
+      "source": "github",
+      "project": "Orion",
+      "text": "PR #88 merged successfully improving performance"
+    },
+    {
+      "timestamp": "09:18",
+      "source": "slack",
+      "project": "Atlas",
+      "text": "Legal approval still pending confirmation"
+    },
+    {
+      "timestamp": "09:22",
+      "source": "email",
+      "project": "Atlas",
+      "text": "Client requesting update on contract review"
+    },
+    {
+      "timestamp": "09:25",
+      "source": "github",
+      "project": "Orion",
+      "text": "Refactored query optimization"
+    }
+  ]
+}

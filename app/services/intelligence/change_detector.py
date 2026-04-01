@@ -1,70 +1,79 @@
 """
-Detects meaningful delta between current window signals and the previous digest.
-Produces structured change data for use in Gemini prompt.
+change_detector.py
+UPDATED: Tracks signal-level changes between cycles for decision context.
+Change types: new | resolved | escalated | progress | dependency
 """
 
-from app.models.digest import Digest
+import logging
+from sqlalchemy.orm import Session
+from app.models.signal import Signal
+
+logger = logging.getLogger("operis.change_detector")
+
+CHANGE_TYPE_PRIORITY = {
+    "escalated":  5,
+    "new":        4,
+    "dependency": 3,
+    "progress":   2,
+    "resolved":   1,
+}
 
 
-def detect_changes(current_signals: list, previous_digest: Digest | None) -> dict:
+def detect_changes(
+    db: Session,
+    current_signals: list[Signal],
+    previous_signals: list[Signal],
+) -> list[dict]:
     """
-    Compares current cycle signal counts against the previous digest.
-    Returns a structured dict with change descriptions for the LLM prompt.
-
-    Args:
-        current_signals: List of Signal ORM objects from current analysis window.
-        previous_digest: Most recent Digest ORM object, or None if first cycle.
+    Compares current vs previous cycle signals.
+    Returns list of change dicts for LLM context.
     """
-    current_counts = {
-        "risk": sum(1 for s in current_signals if s.signal_type == "risk"),
-        "blocker": sum(1 for s in current_signals if s.signal_type == "blocker"),
-        "decision_required": sum(1 for s in current_signals if s.signal_type == "decision_required"),
-        "deadline_risk": sum(1 for s in current_signals if s.signal_type == "deadline_risk"),
-        "progress": sum(1 for s in current_signals if s.signal_type == "progress"),
-        "stable": sum(1 for s in current_signals if s.signal_type == "stable"),
-    }
-    total_risks = current_counts["risk"] + current_counts["blocker"]
-
-    if not previous_digest:
-        return {
-            "is_first_cycle": True,
-            "current_counts": current_counts,
-            "total_risks": total_risks,
-            "changes": ["Initial operational baseline established — no prior state to compare"],
-        }
-
-    prev_risks = previous_digest.risk_count
-    prev_decisions = previous_digest.decision_count
-    prev_progress = previous_digest.progress_count
+    current_map  = {(s.project, s.signal_type): s for s in current_signals}
+    previous_map = {(s.project, s.signal_type): s for s in previous_signals}
 
     changes = []
 
-    delta_risk = total_risks - prev_risks
-    delta_decision = current_counts["decision_required"] - prev_decisions
-    delta_progress = current_counts["progress"] - prev_progress
+    for key, sig in current_map.items():
+        project, stype = key
+        if key not in previous_map:
+            changes.append({
+                "project":     project,
+                "change_type": "new",
+                "signal_type": stype,
+                "description": f"New {stype} signal detected for {project}.",
+            })
+        else:
+            prev = previous_map[key]
+            if sig.priority_score > prev.priority_score + 0.1:
+                changes.append({
+                    "project":     project,
+                    "change_type": "escalated",
+                    "signal_type": stype,
+                    "description": f"{stype} on {project} escalated: {prev.priority_score:.2f} → {sig.priority_score:.2f}.",
+                })
+            elif sig.signal_type == "milestone_progress":
+                changes.append({
+                    "project":     project,
+                    "change_type": "progress",
+                    "signal_type": stype,
+                    "description": f"Progress update on {project}.",
+                })
 
-    if delta_risk > 0:
-        changes.append(f"{delta_risk} new risk signal(s) introduced since previous cycle")
-    elif delta_risk < 0:
-        changes.append(f"{abs(delta_risk)} risk signal(s) resolved or cleared since previous cycle")
+    for key, sig in previous_map.items():
+        project, stype = key
+        if key not in current_map and stype != "milestone_progress":
+            changes.append({
+                "project":     project,
+                "change_type": "resolved",
+                "signal_type": stype,
+                "description": f"{stype} on {project} no longer active — may be resolved.",
+            })
 
-    if delta_decision > 0:
-        changes.append(f"{delta_decision} new decision dependency detected — pending stakeholder action")
-    elif delta_decision < 0:
-        changes.append(f"{abs(delta_decision)} pending decision(s) resolved since previous cycle")
+    # Sort by priority
+    changes.sort(
+        key=lambda c: CHANGE_TYPE_PRIORITY.get(c["change_type"], 0),
+        reverse=True
+    )
 
-    if delta_progress > 0:
-        changes.append(f"{delta_progress} additional progress milestone(s) recorded across monitored projects")
-
-    if current_counts["blocker"] > 0:
-        changes.append(f"{current_counts['blocker']} active blocker(s) present — requires immediate investigation")
-
-    if not changes:
-        changes.append("Operational state consistent with previous monitoring cycle — no significant delta detected")
-
-    return {
-        "is_first_cycle": False,
-        "current_counts": current_counts,
-        "total_risks": total_risks,
-        "changes": changes,
-    }
+    logger.info(f"Change detection: {len(changes)} changes found")
+    return changes

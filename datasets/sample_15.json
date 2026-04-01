@@ -1,0 +1,45 @@
+{
+"sample_id":"sample_15",
+"window":"22:00-22:30",
+"events":[
+{"timestamp":"22:00","source":"slack","project":"Nova","text":"Client exploring additional analytics features"},
+{"timestamp":"22:01","source":"jira","project":"Nova","text":"Ticket NOVA-380 scope discussion ongoing"},
+{"timestamp":"22:02","source":"github","project":"Nova","text":"Prototype branch created"},
+{"timestamp":"22:03","source":"email","project":"Nova","text":"Client evaluating roadmap options"},
+{"timestamp":"22:04","source":"calendar","project":"Nova","text":"Strategy meeting tomorrow"},
+
+{"timestamp":"22:05","source":"slack","project":"Vertex","text":"Client considering feature prioritization changes"},
+{"timestamp":"22:06","source":"jira","project":"Vertex","text":"Ticket VTX-240 under review"},
+{"timestamp":"22:07","source":"github","project":"Vertex","text":"UI iteration commit"},
+{"timestamp":"22:08","source":"email","project":"Vertex","text":"Client assessing timeline impact"},
+{"timestamp":"22:09","source":"calendar","project":"Vertex","text":"Planning sync"},
+
+{"timestamp":"22:10","source":"slack","project":"Atlas","text":"Contract extension discussion ongoing"},
+{"timestamp":"22:11","source":"email","project":"Atlas","text":"Client evaluating renewal terms"},
+{"timestamp":"22:12","source":"jira","project":"Atlas","text":"Approval pending scope clarity"},
+{"timestamp":"22:13","source":"calendar","project":"Atlas","text":"Renewal discussion Friday"},
+{"timestamp":"22:14","source":"slack","project":"Atlas","text":"Strategic alignment required"},
+
+{"timestamp":"22:15","source":"github","project":"Orion","text":"Optimization merged"},
+{"timestamp":"22:16","source":"jira","project":"Orion","text":"Ticket ORN-240 completed"},
+{"timestamp":"22:17","source":"slack","project":"Orion","text":"Milestone achieved"},
+{"timestamp":"22:18","source":"github","project":"Orion","text":"Performance improvement commit"},
+{"timestamp":"22:19","source":"slack","project":"Orion","text":"Stable execution"},
+
+{"timestamp":"22:20","source":"slack","project":"Nova","text":"Scope clarity needed"},
+{"timestamp":"22:21","source":"github","project":"Nova","text":"Experiment branch updated"},
+{"timestamp":"22:22","source":"email","project":"Vertex","text":"Client requested prioritization update"},
+{"timestamp":"22:23","source":"slack","project":"Atlas","text":"Approval depends on roadmap clarity"},
+{"timestamp":"22:24","source":"calendar","project":"Nova","text":"Planning meeting"},
+{"timestamp":"22:25","source":"slack","project":"Orion","text":"Stable performance"},
+{"timestamp":"22:26","source":"github","project":"Orion","text":"Cleanup commit"},
+{"timestamp":"22:27","source":"email","project":"Nova","text":"Client reviewing proposal"},
+{"timestamp":"22:28","source":"slack","project":"Vertex","text":"Delivery confidence moderate"},
+{"timestamp":"22:29","source":"jira","project":"Atlas","text":"Approval awaiting clarity"},
+{"timestamp":"22:30","source":"slack","project":"Nova","text":"Strategic alignment ongoing"},
+{"timestamp":"22:31","source":"github","project":"Vertex","text":"Rendering optimized"},
+{"timestamp":"22:32","source":"slack","project":"Atlas","text":"Contract progressing"},
+{"timestamp":"22:33","source":"email","project":"Nova","text":"Client evaluating options"},
+{"timestamp":"22:34","source":"calendar","project":"Vertex","text":"Planning review"},
+{"timestamp":"22:35","source":"slack","project":"Orion","text":"Execution stable"}
+]}
